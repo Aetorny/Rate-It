@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 from savestate import SaveState
 
 class RateItApp:
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title('Rate It')
         self.state = SaveState()
@@ -17,7 +17,7 @@ class RateItApp:
         self.setup_ui()
         self.show_photo()
 
-    def setup_ui(self):
+    def setup_ui(self) -> None:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
@@ -49,11 +49,14 @@ class RateItApp:
             self.root.bind(str(i), lambda e, v=i: self.select_rating(v))
         self.root.bind('0', lambda e: self.select_rating(10))
 
-    def select_rating(self, value: int):
+    def select_rating(self, value: int) -> None:
         self.selected_rating.set(value)
         self.on_rating_selected()
 
-    def show_photo(self):
+    def show_photo(self) -> None:
+        while self.idx < len(self.keys) and self.data[self.keys[self.idx]]['rating'] != 0:
+            self.idx += 1
+
         if self.idx >= len(self.keys):
             assert self.photo_label
             self.photo_label.config(text='Готово!', image='')
@@ -62,11 +65,12 @@ class RateItApp:
             self.next_btn.config(state=tk.DISABLED)
             self.skip_btn.config(state=tk.DISABLED)
             return
+
         key = self.keys[self.idx]
         photo_path = self.data[key]['photo']
         assert isinstance(photo_path, str)
         img = Image.open(photo_path)
-        # Resize with aspect ratio
+
         max_size = 400, 400
         img.thumbnail(max_size, Image.LANCZOS) # type: ignore
         self.tk_img = ImageTk.PhotoImage(img)
@@ -75,10 +79,10 @@ class RateItApp:
         self.selected_rating.set(0)
         self.next_btn.config(state=tk.DISABLED)
 
-    def on_rating_selected(self):
+    def on_rating_selected(self) -> None:
         self.next_btn.config(state=tk.NORMAL)
 
-    def save_rating(self):
+    def save_rating(self) -> None:
         rating = self.selected_rating.get()
         if rating:
             key = self.keys[self.idx]
@@ -87,7 +91,7 @@ class RateItApp:
             self.idx += 1
             self.show_photo()
 
-    def skip_photo(self):
+    def skip_photo(self) -> None:
         self.idx += 1
         self.show_photo()
 
