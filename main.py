@@ -50,6 +50,8 @@ class RateItApp:
         self.root.bind('0', lambda e: self.select_rating(10))
 
     def select_rating(self, value: int) -> None:
+        if self.idx >= len(self.keys) or self.data[self.keys[self.idx]]['rating'] != 0:
+            return
         self.selected_rating.set(value)
         self.on_rating_selected()
 
