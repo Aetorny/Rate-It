@@ -85,6 +85,8 @@ class RateItApp:
         self.next_btn.config(state=tk.NORMAL)
 
     def save_rating(self) -> None:
+        if self.idx >= len(self.keys) or self.data[self.keys[self.idx]]['rating'] != 0:
+            return
         rating = self.selected_rating.get()
         if rating:
             key = self.keys[self.idx]
