@@ -21,13 +21,20 @@ class RateItApp:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+        # Progress bar
+        self.progress_var = tk.DoubleVar(value=0)
+        self.progress_bar = ttk.Progressbar(main_frame, variable=self.progress_var, maximum=len(self.keys), length=300)
+        self.progress_bar.grid(row=0, column=1, sticky='ew', pady=(0, 10))
+        self.progress_label = ttk.Label(main_frame, text=f"0 / {len(self.keys)}")
+        self.progress_label.grid(row=0, column=2, sticky='w', padx=(10,0))
+
         # Left: Photo
         self.photo_label = ttk.Label(main_frame)
-        self.photo_label.grid(row=0, column=0, rowspan=12, padx=10, pady=10)
+        self.photo_label.grid(row=1, column=0, rowspan=12, padx=10, pady=10)
 
         # Right: Radio buttons
         radio_frame = ttk.Frame(main_frame)
-        radio_frame.grid(row=0, column=1, sticky='n')
+        radio_frame.grid(row=1, column=1, sticky='n')
         for i in range(1, 11):
             rb = ttk.Radiobutton(radio_frame, text=str(i), variable=self.selected_rating, value=i, command=self.on_rating_selected)
             rb.pack(anchor='w')
@@ -35,7 +42,7 @@ class RateItApp:
 
         # Buttons
         btn_frame = ttk.Frame(main_frame)
-        btn_frame.grid(row=11, column=1, sticky='s', pady=10)
+        btn_frame.grid(row=12, column=1, sticky='s', pady=10)
         self.skip_btn = ttk.Button(btn_frame, text='Пропустить', command=self.skip_photo)
         self.skip_btn.pack(side=tk.LEFT, padx=5)
         self.next_btn = ttk.Button(btn_frame, text='Далее', command=self.save_rating, state=tk.DISABLED)
@@ -58,6 +65,11 @@ class RateItApp:
     def show_photo(self) -> None:
         while self.idx < len(self.keys) and self.data[self.keys[self.idx]]['rating'] != 0:
             self.idx += 1
+
+        # Update progress bar and label
+        rated_count = sum(1 for k in self.keys if self.data[k]['rating'] != 0)
+        self.progress_var.set(rated_count)
+        self.progress_label.config(text=f"{rated_count} / {len(self.keys)}")
 
         if self.idx >= len(self.keys):
             assert self.photo_label
